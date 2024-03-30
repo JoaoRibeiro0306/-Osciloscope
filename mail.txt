@@ -1,0 +1,33 @@
+def send_mail():
+    tft.display_set(tft.BLACK, 0, 0, 240, 135)         # Apaga display
+    tft.set_wifi_icon(0,height_max-16)                        # Coloca o icon wifi no display
+    str_1= "Deseja mesmo enviar o email" 
+    str_4 = "para"
+    str_5 = "%s?" % mail_to
+    str_2= "Sim --->"
+    str_3= "Nao --->"
+    tft.display_write_str(tft.Arial16, str_1, 0, 67+16)
+    tft.display_write_str(tft.Arial16, str_4, 0, 67)
+    tft.display_write_str(tft.Arial16, str_5, 0, 67-16)
+    tft.display_write_str(tft.Arial16, str_2, width_max-60, height_max-16)
+    tft.display_write_str(tft.Arial16, str_3, width_max-60, 0)
+
+    del str_1, str_2, str_3, str_4, str_5
+    
+    gc.collect()
+
+    while tft.working():                              # Ciclo principal do programa
+        but=tft.readButton()                          # Lê estado dos botões
+        if but!=tft.NOTHING:
+            #print("Button pressed:",but)
+            if but==11:                           # Button 1 click - Repete função
+                break
+            if but==21: 
+                read_and_display(escala_tensão, escala_tempo, 0, 1)
+                return
+    
+    Vmax, Vmin, Vmed, Vrms, pontos_volt = read_and_display(escala_tempo, escala_tensão, 1, 0)
+    corpo_mail = "Vmax = {}\n Vmin = {}\n Vmed = {}\n Vrms = {}".format(Vmax, Vmin, Vmed, Vrms)
+    del Vmax, Vmin, Vmed, Vrms
+    tft.send_mail(0.01, pontos_volt, corpo_mail,  mail_to)
+    del pontos_volt 
